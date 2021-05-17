@@ -18,7 +18,7 @@ class EpiDyn(Model):
                  startblock=1, density=0.01, p_infect1=0.5, p_infect2=0.5,
                  p_resistant1 = 0.1, p_resistant2 = 0.1, p_death1=0.0,
                  p_death2=0.0, p_sensitive1 = 0.05, p_sensitive2 = 0.05,
-                 spatial=1):
+                 spatial=1, onefirst=1,of_timestep=100):
         '''
         Create the CA field with (height, width) cells.
         '''
@@ -29,6 +29,10 @@ class EpiDyn(Model):
         # Set up the grid and schedule.
         self.schedule_type = schedule_type
         self.schedule = self.schedule_types[self.schedule_type](self)
+        self.of_timestep = of_timestep
+        self.height = height
+        self.width = width
+        self.onefirst = onefirst
         
         # Use a simple grid, where edges wrap around.
         self.grid = Grid(height, width, torus=False)
@@ -53,10 +57,13 @@ class EpiDyn(Model):
             cell.p_sensitive2 = p_sensitive2
             cell.p_resistant1 = p_resistant2
             cell.p_resistant2 = p_resistant2
-            if startblock:
+            if startblock and not onefirst:
                 if ((x == 43 or x == 44) and  (y == height/2 or y == height/2+1)):
                     cell.state = cell.INFECTIOUS2
                 if ((x == 6 or x == 7) and  (y == height/2 or y == height/2+1)):
+                    cell.state = cell.INFECTIOUS1
+            elif onefirst:
+                if ((x == width/2 or x == width/2+1) and  (y == height/2 or y == height/2+1)):
                     cell.state = cell.INFECTIOUS1
             elif self.random.random() < density:
                     cell.state = cell.INFECTIOUS1
@@ -72,6 +79,7 @@ class EpiDyn(Model):
         Have the scheduler advance each cell by one step
         '''
         self.measure_CA = [a for a in self.schedule.agents]
+        print(self.measure_CA[0].x, self.measure_CA[0].step_n)
         self.schedule.step()
                # collect data
         self.datacollector.collect(self)

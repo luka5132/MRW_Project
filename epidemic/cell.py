@@ -21,6 +21,8 @@ class Cell(Agent):
         self.x, self.y = pos
         self.spatial = spatial
         self.state = init_state
+        self.step_n = 1
+        self.switched = 0
         self._nextState = None
 
     @property
@@ -62,7 +64,9 @@ class Cell(Agent):
 
         # Get the neighbors and apply the rules on whether to be INFECTIOUS or SENSITIVE
         # at the next tick.
- 
+        
+        self.step_n += 1
+        
         if self.spatial:
             self.neighbourhood = self.model.grid.iter_neighborhood(self.pos, moore=True, radius=2)
             self.neighbourhood = self.model.grid.get_cell_list_contents(self.neighbourhood)
@@ -98,15 +102,28 @@ class Cell(Agent):
             if self.rd_neighbour.state == self.rd_neighbour.INFECTIOUS2:
                 if np.random.random() < self.p_infect2:
                     self._nextState = self.INFECTIOUS2
-        if self.isRemoved1: 
+        if self.isRemoved1:
+            if self.rd_neighbour.state == self.rd_neighbour.INFECTIOUS2:
+                if np.random.random() < self.p_infect2:
+                    self._nextState = self.INFECTIOUS2
             if rd.random() < self.p_sensitive1:
                 self._nextState = self.SENSITIVE
-        if self.isRemoved2: 
+        if self.isRemoved2:
+            if self.rd_neighbour.state == self.rd_neighbour.INFECTIOUS1:
+                if np.random.random() < self.p_infect1:
+                    self._nextState = self.INFECTIOUS1
             if rd.random() < self.p_sensitive2:
                 self._nextState = self.SENSITIVE
+        if self.model.onefirst: 
+            if not self.switched and self.step_n > self.model.of_timestep:
+                if self.x > self.model.width / 2:
+                    if self.isInfectious1:
+                        self._nextState = self.INFECTIOUS2
         if self.model.schedule_type == "Random":
             self.advance()
 
+
+        
     def advance(self):
         '''
         Simultaneously set the state to the new computed state -- computed in step().
