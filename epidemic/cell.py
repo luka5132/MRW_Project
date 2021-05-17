@@ -9,7 +9,9 @@ class Cell(Agent):
     SENSITIVE = 0
     INFECTIOUS1 = 1
     INFECTIOUS2 = 3
-    REMOVED = 2
+    REMOVED1 = 2
+    REMOVED2 = 4
+    DEAD = 5
 
     def __init__(self, pos, model, spatial, init_state=SENSITIVE):
         '''
@@ -34,8 +36,16 @@ class Cell(Agent):
         return self.state == self.SENSITIVE
     
     @property
-    def isRemoved(self):
-        return self.state == self.REMOVED
+    def isRemoved1(self):
+        return self.state == self.REMOVED1
+    
+    @property
+    def isRemoved2(self):
+        return self.state == self.REMOVED2
+    
+    @property
+    def isDead(self):
+        return self.state == self.DEAD
 
     @property
     def neighbors(self):
@@ -70,11 +80,17 @@ class Cell(Agent):
 
         # Check if state will be changed
         if self.isInfectious1:
-            if np.random.random() < self.p_death:
-                self._nextState = self.REMOVED
+            if np.random.random() < self.p_resistant1:
+                self._nextState = self.REMOVED1
+            if np.random.random() < self.p_death1:
+                self._nextState = self.DEAD
         if self.isInfectious2:
+            if np.random.random() < self.p_resistant2:
+                self._nextState = self.REMOVED2
             if np.random.random() < self.p_death2:
-                self._nextState = self.REMOVED
+                self._nextState = self.DEAD
+        if self.isDead:
+            self._nextState = self.DEAD
         if self.isSensitive:
             if self.rd_neighbour.state == self.rd_neighbour.INFECTIOUS1:
                 if np.random.random() < self.p_infect1:
@@ -82,8 +98,11 @@ class Cell(Agent):
             if self.rd_neighbour.state == self.rd_neighbour.INFECTIOUS2:
                 if np.random.random() < self.p_infect2:
                     self._nextState = self.INFECTIOUS2
-        if self.isRemoved: 
-            if rd.random() < self.p_sensitive:
+        if self.isRemoved1: 
+            if rd.random() < self.p_sensitive1:
+                self._nextState = self.SENSITIVE
+        if self.isRemoved2: 
+            if rd.random() < self.p_sensitive2:
                 self._nextState = self.SENSITIVE
         if self.model.schedule_type == "Random":
             self.advance()
@@ -93,5 +112,4 @@ class Cell(Agent):
         Simultaneously set the state to the new computed state -- computed in step().
         '''
         self.state = self._nextState
-
 

@@ -14,7 +14,11 @@ class EpiDyn(Model):
     schedule_types = {"Random": RandomActivation,
                       "Simultaneous": SimultaneousActivation}
     
-    def __init__(self, height=50, width=50, dummy="", schedule_type="Simultaneous",startblock=1, density=0.01, p_infect1=0.25, p_infect2=0.5, p_death=0.0, p_death2=0.0, p_sensitive = 0.05, spatial=1):
+    def __init__(self, height=50, width=50, dummy="", schedule_type="Simultaneous",
+                 startblock=1, density=0.01, p_infect1=0.5, p_infect2=0.5,
+                 p_resistant1 = 0.1, p_resistant2 = 0.1, p_death1=0.0,
+                 p_death2=0.0, p_sensitive1 = 0.05, p_sensitive2 = 0.05,
+                 spatial=1):
         '''
         Create the CA field with (height, width) cells.
         '''
@@ -31,7 +35,9 @@ class EpiDyn(Model):
         self.datacollector = DataCollector(
             {"Infectious1": lambda m: self.count_infectious1(m,width*height),
              "Infectious2": lambda m: self.count_infectious2(m,width*height),
-             "Removed": lambda m: self.count_removed(m,width*height)})
+             "Removed1": lambda m: self.count_removed1(m,width*height),
+             "Removed2": lambda m: self.count_removed2(m,width*height),
+             "Dead": lambda m: self.count_dead(m,width*height)})
 
         # Place a cell at each location, with default SENSTIVE,
         # and some (a 2x2 block) initialized to INFECTIOUS
@@ -41,14 +47,17 @@ class EpiDyn(Model):
             cell.state = cell.SENSITIVE
             cell.p_infect1 = p_infect1
             cell.p_infect2 = p_infect1
-            cell.p_death = p_death
+            cell.p_death1 = p_death1
             cell.p_death2 = p_death2
-            cell.p_sensitive = p_sensitive
+            cell.p_sensitive1 = p_sensitive1
+            cell.p_sensitive2 = p_sensitive2
+            cell.p_resistant1 = p_resistant2
+            cell.p_resistant2 = p_resistant2
             if startblock:
                 if ((x == 43 or x == 44) and  (y == height/2 or y == height/2+1)):
-                    cell.state = cell.INFECTIOUS1
-                if ((x == 6 or x == 7) and  (y == height/2 or y == height/2+1)):
                     cell.state = cell.INFECTIOUS2
+                if ((x == 6 or x == 7) and  (y == height/2 or y == height/2+1)):
+                    cell.state = cell.INFECTIOUS1
             elif self.random.random() < density:
                     cell.state = cell.INFECTIOUS1
             self.grid.place_agent(cell, (x, y))
@@ -84,11 +93,26 @@ class EpiDyn(Model):
         return len(list_state)/grid_size
 
     @staticmethod
-    def count_removed(model,grid_size):
+    def count_removed1(model,grid_size):
         """
         Helper method to count cells in a given state in a given model.
         """
-        list_state = [a for a in model.schedule.agents if a.state == a.REMOVED]
+        list_state = [a for a in model.schedule.agents if a.state == a.REMOVED1]
         return len(list_state)/grid_size
-
+    
+    @staticmethod
+    def count_removed2(model,grid_size):
+        """
+        Helper method to count cells in a given state in a given model.
+        """
+        list_state = [a for a in model.schedule.agents if a.state == a.REMOVED2]
+        return len(list_state)/grid_size
+    
+    @staticmethod
+    def count_dead(model,grid_size):
+        """
+        Helper method to count cells in a given state in a given model.
+        """
+        list_state = [a for a in model.schedule.agents if a.state == a.DEAD]
+        return len(list_state)/grid_size
 
