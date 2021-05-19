@@ -116,7 +116,7 @@ class Cell(Agent):
                 self._nextState = self.SENSITIVE
         if self.model.onefirst: 
             if not self.switched and self.step_n > self.model.of_timestep:
-                if self.x > self.model.width * self.model.mutant_size:
+                if self.x >= self.model.width * (1 -self.model.mutant_size):
                     if self.isInfectious1:
                         self._nextState = self.INFECTIOUS2
         if self.model.schedule_type == "Random":
