@@ -47,7 +47,8 @@ model_params = {
     "p_sensitive2": UserSettableParameter("slider", "Probability of Re-sensitiveness 2", 0.05, 0.00, 1.0, 0.01),
     "spatial": UserSettableParameter("checkbox", "Spatial", value=True),
     "onefirst": UserSettableParameter("checkbox", "Run One First", value=True),
-    "of_timestep": UserSettableParameter("slider", "Timesteps after which mutatant apears", 100., 0.00, 250., 5.)}
+    "of_timestep": UserSettableParameter("slider", "Timesteps after which mutatant apears", 100., 0.00, 250., 5.),
+    "mutant_size": UserSettableParameter("slider", "Precentage of infected 1 cells that become 2", 0.5, 0.00, 1.0, 0.1)}
 
  
 server = ModularServer(EpiDyn, [canvas_element, cell_chart], "Epidemic Dynamics",  model_params)

@@ -18,7 +18,7 @@ class EpiDyn(Model):
                  startblock=1, density=0.01, p_infect1=0.5, p_infect2=0.5,
                  p_resistant1 = 0.1, p_resistant2 = 0.1, p_death1=0.0,
                  p_death2=0.0, p_sensitive1 = 0.05, p_sensitive2 = 0.05,
-                 spatial=1, onefirst=1,of_timestep=100):
+                 spatial=1, onefirst=1,of_timestep=100, mutant_size = 0.5):
         '''
         Create the CA field with (height, width) cells.
         '''
@@ -33,6 +33,7 @@ class EpiDyn(Model):
         self.height = height
         self.width = width
         self.onefirst = onefirst
+        self.mutant_size = mutant_size
         
         # Use a simple grid, where edges wrap around.
         self.grid = Grid(height, width, torus=False)
