@@ -30,6 +30,11 @@ cell_chart = ChartModule([{"Label": "Infectious1", "Color": 'Red'},
                           {"Label": "Dead", "Color": 'Black'},
                           {"Label": "TotalInfectious", "Color": 'Orange'}],
                          canvas_height=500, canvas_width=1000)
+cell_chart2 = ChartModule([{"Label": "PositiveCorrelation1", "Color": 'Red'},
+                          {"Label": "NegativeCorrelation1", "Color": 'Blue'},
+                          {"Label": "PositiveCorrelation2", "Color": 'Yellow'},
+                          {"Label": "NegativeCorrelation2", "Color": 'Green'}],
+                         canvas_height=500, canvas_width=1000)
 
 model_params = {
     "height": 50,
@@ -52,4 +57,4 @@ model_params = {
     "mutant_size": UserSettableParameter("slider", "Precentage of infected 1 cells that become 2", 0.5, 0.00, 1.0, 0.02)}
 
  
-server = ModularServer(EpiDyn, [canvas_element, cell_chart], "Epidemic Dynamics",  model_params)
+server = ModularServer(EpiDyn, [canvas_element, cell_chart, cell_chart2], "Epidemic Dynamics",  model_params)
