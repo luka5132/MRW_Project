@@ -27,7 +27,8 @@ cell_chart = ChartModule([{"Label": "Infectious1", "Color": 'Red'},
                           {"Label": "Infectious2", "Color": 'Yellow'},
                           {"Label": "Removed1", "Color": 'Blue'},
                           {"Label": "Removed2", "Color": 'Green'},
-                          {"Label": "Dead", "Color": 'Black'}],
+                          {"Label": "Dead", "Color": 'Black'},
+                          {"Label": "TotalInfectious", "Color": 'Orange'}],
                          canvas_height=500, canvas_width=1000)
 
 model_params = {

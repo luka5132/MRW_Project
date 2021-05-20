@@ -40,9 +40,12 @@ class EpiDyn(Model):
         self.datacollector = DataCollector(
             {"Infectious1": lambda m: self.count_infectious1(m,width*height),
              "Infectious2": lambda m: self.count_infectious2(m,width*height),
+             "TotalInfectious": lambda m: self.count_infectious(m,width*height),
              "Removed1": lambda m: self.count_removed1(m,width*height),
              "Removed2": lambda m: self.count_removed2(m,width*height),
              "Dead": lambda m: self.count_dead(m,width*height)})
+             #"PositiveCorrelation": lambda m: self.calculate_positive_correlation(m,width*height),
+             #"NegativeCorrelation": lambda m: self.calculate_negative_correlation(m,width*height)})
 
         # Place a cell at each location, with default SENSTIVE,
         # and some (a 2x2 block) initialized to INFECTIOUS
@@ -124,4 +127,27 @@ class EpiDyn(Model):
         """
         list_state = [a for a in model.schedule.agents if a.state == a.DEAD]
         return len(list_state)/grid_size
+    
+    @staticmethod
+    def count_infectious(model,grid_size):
+        list_state = [a for a in model.schedule.agents if a.state == a.INFECTIOUS1
+                      or a.state == a.INFECTIOUS2]
+        return len(list_state)/grid_size
+    
+    @staticmethod
+    def count_sensitive(model,grid_size):
+        list_state = [a for a in model.schedule.agents if a.state == a.SENSITIVE]
+        return len(list_state)/grid_size
 
+    
+#    def calculate_positive_correlation(self,model,grid_size):
+#        list_state = [a for a in model.schedule.agents if a.state == a.INFECTIOUS1
+#                      and (a+1).state == (a+1).INFECTIOUS1]
+#        return len(list_state)/(self.count_infectious1(model,grid_size)**2)
+        
+    
+#    def calculate_negative_correlation(self,model,grid_size):
+#        list_state = [a for a in model.schedule.agents
+#                      if a.state == a.INFECTIOUS1 and (a+1).state == (a+1).SENSITIVE]
+#        return len(list_state)/(self.count_infectious1(model,grid_size)
+#                   *self.count_sensitive(model,grid_size))
