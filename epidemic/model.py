@@ -85,7 +85,6 @@ class EpiDyn(Model):
         Have the scheduler advance each cell by one step
         '''
         self.measure_CA = [a for a in self.schedule.agents]
-        print(self.measure_CA[0].x, self.measure_CA[0].step_n)
         self.schedule.step()
                # collect data
         self.datacollector.collect(self)
@@ -145,7 +144,7 @@ class EpiDyn(Model):
     def calculate_positive_correlation1(self,model,grid_size):
         agents = model.schedule.agents
         list_state = []
-        for i in range(len(agents)):
+        for i in range(len(agents)-1):
             if agents[i].state == agents[i].INFECTIOUS1 and agents[i+1].state == agents[i+1].INFECTIOUS1:
                 list_state.append(agents[i])
         return (len(list_state)/grid_size)/(self.count_infectious1(model,grid_size)**2)
@@ -154,7 +153,8 @@ class EpiDyn(Model):
     def calculate_negative_correlation1(self,model,grid_size):
         agents = model.schedule.agents
         list_state = []
-        for i in range(len(agents)):
+        
+        for i in range(len(agents)-1):
             if agents[i].state == agents[i].INFECTIOUS1 and agents[i+1].state == agents[i+1].SENSITIVE:
                 list_state.append(agents[i])
         return (len(list_state)/grid_size)/(self.count_infectious1(model,grid_size)*self.count_sensitive(model,grid_size))
@@ -164,7 +164,7 @@ class EpiDyn(Model):
     def calculate_positive_correlation2(self,model,grid_size):
         agents = model.schedule.agents
         list_state = []
-        for i in range(len(agents)):
+        for i in range(len(agents)-1):
             if agents[i].state == agents[i].INFECTIOUS2 and agents[i+1].state == agents[i+1].INFECTIOUS2:
                 list_state.append(agents[i])
         if self.count_infectious2(model,grid_size) == 0:
@@ -176,7 +176,7 @@ class EpiDyn(Model):
     def calculate_negative_correlation2(self,model,grid_size):
         agents = model.schedule.agents
         list_state = []
-        for i in range(len(agents)):
+        for i in range(len(agents)-1):
             if agents[i].state == agents[i].INFECTIOUS2 and agents[i+1].state == agents[i+1].SENSITIVE:
                 list_state.append(agents[i])
         if self.count_infectious2(model,grid_size) == 0:
